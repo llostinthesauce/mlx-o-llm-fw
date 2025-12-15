@@ -1,0 +1,8 @@
+[
+  {
+    "name": "demo",
+    "variant": "base",
+    "version": "v1",
+    "path": "/absolute/path/to/demo-model.bin"
+  }
+]

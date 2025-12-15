@@ -1,0 +1,10 @@
+.venv/
+.build/
+.build-cache/
+.build-module-cache/
+.DS_Store
+**/.DS_Store
+__pycache__/
+.pytest_cache/
+.vscode/
+.idea/

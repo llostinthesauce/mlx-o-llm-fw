@@ -1,0 +1,30 @@
+[submodule "upstream/ollama"]
+	path = upstream/ollama
+	url = https://github.com/ollama/ollama.git
+[submodule "upstream/mlx-swift"]
+	path = upstream/mlx-swift
+	url = https://github.com/ml-explore/mlx-swift.git
+[submodule "upstream/mlx-swift-examples"]
+	path = upstream/mlx-swift-examples
+	url = https://github.com/ml-explore/mlx-swift-examples.git
+[submodule "upstream/mlx-lm"]
+	path = upstream/mlx-lm
+	url = https://github.com/ml-explore/mlx-lm.git
+[submodule "upstream/fastmlx"]
+	path = upstream/fastmlx
+	url = https://github.com/arcee-ai/fastmlx.git
+[submodule "upstream/swift-argument-parser"]
+	path = upstream/swift-argument-parser
+	url = https://github.com/apple/swift-argument-parser.git
+[submodule "upstream/oci-distribution-spec"]
+	path = upstream/oci-distribution-spec
+	url = https://github.com/opencontainers/distribution-spec.git
+[submodule "upstream/oci-image-spec"]
+	path = upstream/oci-image-spec
+	url = https://github.com/opencontainers/image-spec.git
+[submodule "upstream/oras-go"]
+	path = upstream/oras-go
+	url = https://github.com/oras-project/oras-go.git
+[submodule "upstream/oras-cli"]
+	path = upstream/oras-cli
+	url = https://github.com/oras-project/oras.git
