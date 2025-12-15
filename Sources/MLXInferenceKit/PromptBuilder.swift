@@ -14,35 +14,39 @@ public enum PromptBuilder {
     ///
     /// Messages are flattened by role; system messages are concatenated, user/assistant messages
     /// are appended in order. This is intentionally simple and can be replaced with richer templates later.
-    public static func llama(
+    /// Builds a prompt for Llama 3 style chat models.
+    ///
+    /// Template:
+    /// <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+    ///
+    /// {system_prompt}<|eot_id|><|start_header_id|>user<|end_header_id|>
+    ///
+    /// {user_prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+    ///
+    ///
+    public static func llama3(
         systemPrompt: String?,
         messages: [ChatMessage],
         userPrompt: String
     ) -> String {
-        var parts: [String] = []
+        var parts: [String] = ["<|begin_of_text|>"]
 
-        let systemMessages = messages.filter { $0.role == .system }.map(\.content)
-        let userMessages = messages.filter { $0.role == .user }.map(\.content)
-        let assistantMessages = messages.filter { $0.role == .assistant }.map(\.content)
-
-        let systemBlock = ([systemPrompt].compactMap { $0 } + systemMessages)
-            .joined(separator: "\n")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        if !systemBlock.isEmpty {
-            parts.append("<s>[SYSTEM_PROMPT]\n\(systemBlock)\n</s>")
+        // System prompt
+        if let system = systemPrompt {
+            parts.append("<|start_header_id|>system<|end_header_id|>\n\n\(system)<|eot_id|>")
         }
 
-        if !userMessages.isEmpty {
-            parts.append(userMessages.joined(separator: "\n"))
+        // History
+        for msg in messages {
+            parts.append("<|start_header_id|>\(msg.role.rawValue)<|end_header_id|>\n\n\(msg.content)<|eot_id|>")
         }
 
-        parts.append(userPrompt)
+        // Current User prompt
+        parts.append("<|start_header_id|>user<|end_header_id|>\n\n\(userPrompt)<|eot_id|>")
 
-        if !assistantMessages.isEmpty {
-            parts.append("[ASSISTANT]\n\(assistantMessages.joined(separator: "\n"))")
-        }
+        // Assistant preamble
+        parts.append("<|start_header_id|>assistant<|end_header_id|>\n\n")
 
-        return parts.joined(separator: "\n\n")
+        return parts.joined()
     }
 }

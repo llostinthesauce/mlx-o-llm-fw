@@ -1,5 +1,6 @@
 import Foundation
 import MLXLMCommon
+import MLXLLM
 
 public enum MLXSwiftAdapterError: Error, Equatable {
     case unavailable(String)
@@ -119,7 +120,7 @@ public struct MLXSwiftAdapter: MLXModelAdapter {
         request: GenerationRequest,
         context: Context
     ) -> AsyncThrowingStream<GenerationEvent, Error> {
-        let promptText = PromptBuilder.llama(
+        let promptText = PromptBuilder.llama3(
             systemPrompt: request.systemPrompt,
             messages: request.messages,
             userPrompt: request.prompt
@@ -179,7 +180,7 @@ public struct MLXSwiftAdapter: MLXModelAdapter {
                         continuation.finish(throwing: RunnerError.cancelled)
                         return
                     }
-                    combined.append(token + " ")
+                    combined.append(token)
                     continuation.yield(.token(token))
                 }
 
@@ -221,6 +222,7 @@ public struct MLXSwiftAdapter: MLXModelAdapter {
 
                     let chatMessages = buildChatMessages(systemPrompt: request.systemPrompt, history: request.messages, userPrompt: request.prompt)
 
+                    var stopHit = false
                     try await container.perform { (ctx: ModelContext) async throws -> Void in
                         let userInput = UserInput(chat: chatMessages)
                         let input = try await ctx.processor.prepare(input: userInput)
@@ -233,7 +235,6 @@ public struct MLXSwiftAdapter: MLXModelAdapter {
                             context: ctx
                         )
 
-                        var stopHit = false
                         for await event in stream {
                             if Task.isCancelled {
                                 break
@@ -310,5 +311,10 @@ public struct MLXSwiftAdapter: MLXModelAdapter {
     private func repetitionPenalty(from config: GenerationConfig) -> Float? {
         let penalty = max(config.presencePenalty, config.frequencyPenalty)
         return penalty > 0 ? Float(penalty) : nil
+    }
+
+    private func loadModelContainer(directory: URL) async throws -> ModelContainer {
+        let configuration = ModelConfiguration(directory: directory)
+        return try await LLMModelFactory.shared.loadContainer(configuration: configuration)
     }
 }
